@@ -4,7 +4,7 @@ import colors from "colors"
 import { sequelize } from "./database/index.js"
 import { graphqlHTTP } from "express-graphql"
 import cors from "cors"
-import { userGraphqlSchema } from "./graphql/userControls.js"
+import { graphqlSchema } from "./graphql/schema.js"
 
 colors.enable()
 dotenv.config()
@@ -17,7 +17,7 @@ app.use(
   "/graphql",
   graphqlHTTP({
     graphiql: process.env.NODE_ENV === "development",
-    schema: userGraphqlSchema,
+    schema: graphqlSchema,
   })
 )
 

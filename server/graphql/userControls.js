@@ -1,8 +1,6 @@
 import {
-  GraphQLSchema,
   GraphQLString,
   GraphQLID,
-  GraphQLInt,
   GraphQLObjectType,
   GraphQLList,
 } from "graphql"
@@ -29,43 +27,32 @@ const UserType = new GraphQLObjectType({
   }),
 })
 
-const UserQueries = new GraphQLObjectType({
-  name: "userQuery",
-  fields: {
-    user: {
-      type: UserType,
-      args: { id: { type: GraphQLID } },
-      async resolve(parent, args) {
-        return await User.findOne({ id: args.id })
-      },
-    },
-    users: {
-      type: new GraphQLList(UserType),
-      async resolve(parents, args) {
-        return await User.findAll()
-      },
+export const userQueries = {
+  user: {
+    type: UserType,
+    args: { id: { type: GraphQLID } },
+    async resolve(parent, args) {
+      return await User.findOne({ where: { id: args.id } })
     },
   },
-})
-
-const userMutations = new GraphQLObjectType({
-  name: "userMutation",
-  fields: {
-    addUser: {
-      type: UserType,
-      args: {
-        firstName: { type: GraphQLString },
-        lastName: { type: GraphQLString },
-        email: { type: GraphQLString },
-      },
-      async resolve(parent, args) {
-        return await User.create(args)
-      },
+  users: {
+    type: new GraphQLList(UserType),
+    async resolve(parents, args) {
+      return await User.findAll()
     },
   },
-})
+}
 
-export const userGraphqlSchema = new GraphQLSchema({
-  query: UserQueries,
-  mutation: userMutations,
-})
+export const userMutations = {
+  addUser: {
+    type: UserType,
+    args: {
+      firstName: { type: GraphQLString },
+      lastName: { type: GraphQLString },
+      email: { type: GraphQLString },
+    },
+    async resolve(parent, args) {
+      return await User.create(args)
+    },
+  },
+}
