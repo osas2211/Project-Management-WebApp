@@ -14,7 +14,7 @@ const User = sequelize.define(
     job_title: { type: DataTypes.STRING },
     DOB: { type: DataTypes.DATE },
   },
-  { tableName: "Users" }
+  { tableName: "UsersTable" }
 )
 
 export default User
