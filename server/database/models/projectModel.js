@@ -1,9 +1,16 @@
 import { sequelize } from "../index.js"
-import { DataTypes, NOW } from "sequelize"
+import { DataTypes, NOW, UUID, UUIDV4 } from "sequelize"
+import { Task } from "./TaskModel.js"
 
 const Project = sequelize.define(
   "project",
   {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: UUID,
+      primaryKey: true,
+      unique: true,
+    },
     title: { type: DataTypes.STRING },
     photo_url: { type: DataTypes.STRING },
     description: { type: DataTypes.STRING },
@@ -22,7 +29,10 @@ const Project = sequelize.define(
     start_date: { type: DataTypes.DATE, defaultValue: NOW },
     end_date: { type: DataTypes.DATE },
   },
-  { tableName: "ProjectTable" }
+  { tableName: "ProjectsTable" }
 )
+
+Project.hasMany(Task)
+Task.belongsTo(Project)
 
 export default Project
