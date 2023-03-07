@@ -6,13 +6,15 @@ import {
 } from "graphql"
 import User from "../database/models/userModel.js"
 import dotenv from "dotenv"
+import Project from "../database/models/projectModel.js"
+import { ProjectType } from "./projectControls.js"
 
 dotenv.config()
 
 const UserType = new GraphQLObjectType({
   name: "user",
   fields: () => ({
-    id: { type: GraphQLID },
+    id: { type: GraphQLString },
     firstName: { type: GraphQLString },
     lastName: { type: GraphQLString },
     profile_url: { type: GraphQLString },
@@ -24,21 +26,26 @@ const UserType = new GraphQLObjectType({
     DOB: { type: GraphQLString },
     createdAt: { type: GraphQLString },
     updatedAt: { type: GraphQLString },
+    projects: { type: new GraphQLList(ProjectType) },
   }),
 })
 
 export const userQueries = {
   user: {
     type: UserType,
-    args: { id: { type: GraphQLID } },
+    args: { id: { type: GraphQLString } },
     async resolve(parent, args) {
-      return await User.findOne({ where: { id: args.id } })
+      const user = await User.findOne({
+        where: { id: args.id },
+        include: Project,
+      })
+      return user
     },
   },
   users: {
     type: new GraphQLList(UserType),
     async resolve(parents, args) {
-      return await User.findAll()
+      return await User.findAll({ include: Project })
     },
   },
 }
@@ -52,7 +59,8 @@ export const userMutations = {
       email: { type: GraphQLString },
     },
     async resolve(parent, args) {
-      return await User.create(args)
+      const user = await User.create(args)
+      return user
     },
   },
 }

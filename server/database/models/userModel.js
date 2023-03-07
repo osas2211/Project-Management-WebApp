@@ -1,9 +1,11 @@
 import { sequelize } from "../index.js"
-import { DataTypes } from "sequelize"
+import { DataTypes, UUIDV4 } from "sequelize"
+import Project from "./projectModel.js"
 
 const User = sequelize.define(
-  "User",
+  "user",
   {
+    id: { type: DataTypes.UUID, defaultValue: UUIDV4, primaryKey: true },
     firstName: { type: DataTypes.STRING, allowNull: false },
     lastName: { type: DataTypes.STRING, allowNull: false },
     profile_url: { type: DataTypes.STRING, defaultValue: "" },
@@ -16,5 +18,8 @@ const User = sequelize.define(
   },
   { tableName: "UsersTable" }
 )
+
+Project.belongsToMany(User, { through: "UserProjects" })
+User.belongsToMany(Project, { through: "UserProjects" })
 
 export default User
