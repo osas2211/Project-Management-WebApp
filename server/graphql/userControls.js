@@ -60,6 +60,7 @@ export const userMutations = {
       lastName: { type: GraphQLString },
       email: { type: GraphQLString },
       userName: { type: GraphQLString },
+      sex: { type: GraphQLString },
     },
     async resolve(parent, args) {
       const user = await User.create(args)
@@ -85,6 +86,19 @@ export const userMutations = {
       const updateUser = await user.update(args)
       await user.save()
       return updateUser
+    },
+  },
+  deleteUser: {
+    type: UserType,
+    args: {
+      userName: { type: GraphQLString },
+    },
+    async resolve(parent, args) {
+      const user = await User.findOne({
+        where: { userName: args.userName },
+      })
+      await user.destroy()
+      return user
     },
   },
 }
