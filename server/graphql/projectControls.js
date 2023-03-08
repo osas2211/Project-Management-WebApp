@@ -7,6 +7,7 @@ import {
 } from "graphql"
 import dotenv from "dotenv"
 import Project from "../database/models/projectModel.js"
+import User from "../database/models/userModel.js"
 
 dotenv.config()
 
@@ -21,40 +22,10 @@ export const ProjectType = new GraphQLObjectType({
     project_manager: { type: GraphQLID },
     files_link: { type: new GraphQLList(GraphQLString) },
     tech_stack: { type: new GraphQLList(GraphQLString) },
-    status: {
-      type: new GraphQLEnumType({
-        name: "projectStatus",
-        values: {
-          created: {
-            value: 0,
-          },
-          in_progress: {
-            value: 1,
-          },
-          completed: {
-            value: 2,
-          },
-        },
-      }),
-    },
-    priority: {
-      type: new GraphQLEnumType({
-        name: "projectPriority",
-        values: {
-          low: {
-            value: 0,
-          },
-          medium: {
-            value: 1,
-          },
-          high: {
-            value: 2,
-          },
-        },
-      }),
-    },
+    status: { type: GraphQLString },
+    priority: { type: GraphQLString },
     start_date: { type: GraphQLString },
-    end_data: { type: GraphQLString },
+    end_date: { type: GraphQLString },
     createdAt: { type: GraphQLString },
     updatedAt: { type: GraphQLString },
   }),
@@ -75,5 +46,34 @@ export const ProjectQueries = {
       const projects = await Project.findAll()
       return projects
     },
+  },
+}
+
+export const ProjectMutations = {
+  createProject: {
+    type: ProjectType,
+    args: {
+      userName: { type: GraphQLString },
+      title: { type: GraphQLString },
+      description: { type: GraphQLString },
+      category: { type: GraphQLString },
+      tech_stack: { type: new GraphQLList(GraphQLString) },
+      files_link: { type: new GraphQLList(GraphQLString) },
+      start_date: { type: GraphQLString },
+      end_date: { type: GraphQLString },
+    },
+    async resolve(parent, args) {
+      const user = await User.findOne({ where: { userName: args.userName } })
+      const data = args
+      const project = await Project.create({
+        ...data,
+        project_manager: user.userName,
+      })
+      await project.addUser(user.id)
+      return project
+    },
+  },
+  addCollaborator: {
+    args: { userName: { type: GraphQLString } },
   },
 }

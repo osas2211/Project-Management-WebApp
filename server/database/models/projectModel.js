@@ -1,5 +1,5 @@
 import { sequelize } from "../index.js"
-import { DataTypes, NOW, UUID, UUIDV4 } from "sequelize"
+import { DataTypes, NOW, UUID, UUIDV1, UUIDV4 } from "sequelize"
 import { Task } from "./TaskModel.js"
 
 const Project = sequelize.define(
@@ -7,7 +7,7 @@ const Project = sequelize.define(
   {
     id: {
       type: DataTypes.UUID,
-      defaultValue: UUID,
+      defaultValue: UUIDV1,
       primaryKey: true,
       unique: true,
     },
