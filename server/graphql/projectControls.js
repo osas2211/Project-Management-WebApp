@@ -54,8 +54,26 @@ export const ProjectType = new GraphQLObjectType({
       }),
     },
     start_date: { type: GraphQLString },
-    end_datae: { type: GraphQLString },
+    end_data: { type: GraphQLString },
     createdAt: { type: GraphQLString },
     updatedAt: { type: GraphQLString },
   }),
 })
+
+export const ProjectQueries = {
+  project: {
+    type: ProjectType,
+    args: { id: { type: GraphQLString } },
+    async resolve(parent, args) {
+      const project = await Project.findByPk(args.id)
+      return project
+    },
+  },
+  projects: {
+    type: new GraphQLList(ProjectType),
+    async resolve(parent, args) {
+      const projects = await Project.findAll()
+      return projects
+    },
+  },
+}
