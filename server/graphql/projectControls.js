@@ -74,6 +74,16 @@ export const ProjectMutations = {
     },
   },
   addCollaborator: {
-    args: { userName: { type: GraphQLString } },
+    type: ProjectType,
+    args: {
+      userName: { type: GraphQLString },
+      id: { type: GraphQLString },
+    },
+    async resolve(parent, args) {
+      const project = await Project.findByPk(args.id)
+      const user = await User.findOne({ where: { userName: args.userName } })
+      await project.addUser(user.id)
+      return project
+    },
   },
 }
