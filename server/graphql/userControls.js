@@ -8,6 +8,7 @@ import User from "../database/models/userModel.js"
 import dotenv from "dotenv"
 import Project from "../database/models/projectModel.js"
 import { ProjectType } from "./projectControls.js"
+import { where } from "sequelize"
 
 dotenv.config()
 
@@ -19,6 +20,7 @@ const UserType = new GraphQLObjectType({
     lastName: { type: GraphQLString },
     profile_url: { type: GraphQLString },
     email: { type: GraphQLString },
+    userName: { type: GraphQLString },
     phone: { type: GraphQLString },
     sex: { type: GraphQLString },
     about: { type: GraphQLString },
@@ -33,10 +35,10 @@ const UserType = new GraphQLObjectType({
 export const userQueries = {
   user: {
     type: UserType,
-    args: { id: { type: GraphQLString } },
+    args: { userName: { type: GraphQLString } },
     async resolve(parent, args) {
       const user = await User.findOne({
-        where: { id: args.id },
+        where: { userName: args.userName },
         include: Project,
       })
       return user
@@ -57,10 +59,32 @@ export const userMutations = {
       firstName: { type: GraphQLString },
       lastName: { type: GraphQLString },
       email: { type: GraphQLString },
+      userName: { type: GraphQLString },
     },
     async resolve(parent, args) {
       const user = await User.create(args)
       return user
+    },
+  },
+  updateProfile: {
+    type: UserType,
+    args: {
+      firstName: { type: GraphQLString },
+      lastName: { type: GraphQLString },
+      profile_url: { type: GraphQLString },
+      about: { type: GraphQLString },
+      DOB: { type: GraphQLString },
+      job_title: { type: GraphQLString },
+      phone: { type: GraphQLString },
+      userName: { type: GraphQLString },
+    },
+    async resolve(parent, args) {
+      const userName = args.userName
+      delete args.userName
+      const user = await User.findOne({ where: { userName } })
+      const updateUser = await user.update(args)
+      await user.save()
+      return updateUser
     },
   },
 }

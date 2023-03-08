@@ -16,6 +16,7 @@ export const ProjectType = new GraphQLObjectType({
     id: { type: GraphQLID },
     title: { type: GraphQLString },
     description: { type: GraphQLString },
+    photo_url: { type: GraphQLString },
     category: { type: GraphQLString },
     project_manager: { type: GraphQLID },
     files_link: { type: new GraphQLList(GraphQLString) },
