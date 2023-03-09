@@ -86,4 +86,13 @@ export const ProjectMutations = {
       return project
     },
   },
+  deleteProject: {
+    type: ProjectType,
+    args: { id: { type: GraphQLString } },
+    async resolve(parent, args) {
+      const project = await Project.findByPk(args.id)
+      await project.destroy()
+      return project
+    },
+  },
 }
