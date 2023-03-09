@@ -21,6 +21,14 @@ export const TaskType = new GraphQLObjectType({
 })
 
 export const TaskQueries = {
+  task: {
+    type: TaskType,
+    args: { id: GraphQLID },
+    async resolve(parent, args) {
+      const task = await Task.findByPk(args.id)
+      return task
+    },
+  },
   tasks: {
     type: new GraphQLList(TaskType),
     args: {
