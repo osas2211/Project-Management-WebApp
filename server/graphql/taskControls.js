@@ -25,15 +25,33 @@ export const TaskQueries = {
     type: new GraphQLList(TaskType),
     args: {
       project_id: { type: GraphQLID },
-      userName: { type: GraphQLString },
     },
     async resolve(parent, args) {
-      const user = await User.findOne({ where: { userName: args.userName } })
-      const projects = await user.getProjects()
-      const project = await projects.find(
-        (project) => project.id === args.project_id
-      )
+      const project = await Project.findByPk(args.project_id, { include: Task })
       return project.tasks
+    },
+  },
+}
+
+export const TaskMutations = {
+  createTask: {
+    type: TaskType,
+    args: {
+      title: { type: GraphQLString },
+      status: { type: GraphQLString },
+      assigned_to: { type: GraphQLString },
+      assigned_by: { type: GraphQLString },
+      due_date: { type: GraphQLString },
+      project_id: { type: GraphQLString },
+    },
+    async resolve(parent, args) {
+      const project = await Project.findByPk(args.project_id)
+      const task = await Task.create({
+        ...args,
+        assigned_by: project.project_manager,
+      })
+      await project.addTask(task.id)
+      return task
     },
   },
 }

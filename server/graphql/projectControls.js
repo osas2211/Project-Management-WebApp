@@ -9,6 +9,7 @@ import Project from "../database/models/projectModel.js"
 import User from "../database/models/userModel.js"
 import { UserType } from "./userControls.js"
 import { TaskType } from "./taskControls.js"
+import { Task } from "../database/models/TaskModel.js"
 
 dotenv.config()
 
@@ -39,14 +40,14 @@ export const ProjectQueries = {
     type: ProjectType,
     args: { id: { type: GraphQLString } },
     async resolve(parent, args) {
-      const project = await Project.findByPk(args.id, { include: User })
+      const project = await Project.findByPk(args.id, { include: [User, Task] })
       return project
     },
   },
   projects: {
     type: new GraphQLList(ProjectType),
     async resolve(parent, args) {
-      const projects = await Project.findAll({ include: User })
+      const projects = await Project.findAll({ include: [User, Task] })
       return projects
     },
   },

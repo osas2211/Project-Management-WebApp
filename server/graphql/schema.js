@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLSchema } from "graphql"
 import { ProjectMutations, ProjectQueries } from "./projectControls.js"
-import { TaskQueries } from "./taskControls.js"
+import { TaskMutations, TaskQueries } from "./taskControls.js"
 import { userQueries, userMutations } from "./userControls.js"
 
 const RootQuery = new GraphQLObjectType({
@@ -17,6 +17,7 @@ const Mutations = new GraphQLObjectType({
   fields: {
     ...userMutations,
     ...ProjectMutations,
+    ...TaskMutations,
   },
 })
 
