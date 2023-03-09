@@ -62,4 +62,18 @@ export const TaskMutations = {
       return task
     },
   },
+  updateTask: {
+    type: TaskType,
+    args: {
+      id: { type: GraphQLID },
+      title: { type: GraphQLString },
+      status: { type: GraphQLString },
+    },
+    async resolve(parent, args) {
+      const task = await Task.findByPk(args.id)
+      await task.update(args)
+      await task.save()
+      return task
+    },
+  },
 }
