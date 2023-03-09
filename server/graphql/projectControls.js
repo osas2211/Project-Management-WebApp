@@ -3,11 +3,11 @@ import {
   GraphQLID,
   GraphQLObjectType,
   GraphQLList,
-  GraphQLEnumType,
 } from "graphql"
 import dotenv from "dotenv"
 import Project from "../database/models/projectModel.js"
 import User from "../database/models/userModel.js"
+import { UserType } from "./userControls.js"
 
 dotenv.config()
 
@@ -28,6 +28,7 @@ export const ProjectType = new GraphQLObjectType({
     end_date: { type: GraphQLString },
     createdAt: { type: GraphQLString },
     updatedAt: { type: GraphQLString },
+    users: { type: new GraphQLList(UserType) },
   }),
 })
 
@@ -36,14 +37,14 @@ export const ProjectQueries = {
     type: ProjectType,
     args: { id: { type: GraphQLString } },
     async resolve(parent, args) {
-      const project = await Project.findByPk(args.id)
+      const project = await Project.findByPk(args.id, { include: User })
       return project
     },
   },
   projects: {
     type: new GraphQLList(ProjectType),
     async resolve(parent, args) {
-      const projects = await Project.findAll()
+      const projects = await Project.findAll({ include: User })
       return projects
     },
   },
@@ -81,7 +82,10 @@ export const ProjectMutations = {
     },
     async resolve(parent, args) {
       const project = await Project.findByPk(args.id)
-      const user = await User.findOne({ where: { userName: args.userName } })
+      const user = await User.findOne({
+        where: { userName: args.userName },
+        include: User,
+      })
       await project.addUser(user.id)
       return project
     },

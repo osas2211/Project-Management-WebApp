@@ -12,7 +12,7 @@ import { where } from "sequelize"
 
 dotenv.config()
 
-const UserType = new GraphQLObjectType({
+export const UserType = new GraphQLObjectType({
   name: "user",
   fields: () => ({
     id: { type: GraphQLString },
