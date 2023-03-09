@@ -8,6 +8,7 @@ import dotenv from "dotenv"
 import Project from "../database/models/projectModel.js"
 import User from "../database/models/userModel.js"
 import { UserType } from "./userControls.js"
+import { TaskType } from "./taskControls.js"
 
 dotenv.config()
 
@@ -29,6 +30,7 @@ export const ProjectType = new GraphQLObjectType({
     createdAt: { type: GraphQLString },
     updatedAt: { type: GraphQLString },
     users: { type: new GraphQLList(UserType) },
+    tasks: { type: new GraphQLList(TaskType) },
   }),
 })
 
