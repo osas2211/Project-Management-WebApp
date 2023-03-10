@@ -11,6 +11,7 @@ export const Task = sequelize.define(
     },
     assigned_to: { type: DataTypes.STRING },
     assigned_by: { type: DataTypes.STRING },
+    tag: { type: DataTypes.STRING },
     due_date: { type: DataTypes.DATE },
   },
   { tableName: "TasksTable" }

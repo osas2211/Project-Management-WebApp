@@ -16,6 +16,7 @@ export const TaskType = new GraphQLObjectType({
     status: { type: GraphQLString },
     assigned_to: { type: GraphQLString },
     assigned_by: { type: GraphQLString },
+    tag: { type: GraphQLString },
     due_date: { type: GraphQLString },
   }),
 })
@@ -49,6 +50,7 @@ export const TaskMutations = {
       status: { type: GraphQLString },
       assigned_to: { type: GraphQLString },
       assigned_by: { type: GraphQLString },
+      tag: { type: GraphQLString },
       due_date: { type: GraphQLString },
       project_id: { type: GraphQLString },
     },
@@ -68,6 +70,8 @@ export const TaskMutations = {
       id: { type: GraphQLID },
       title: { type: GraphQLString },
       status: { type: GraphQLString },
+      tag: { type: GraphQLString },
+      assigned_to: { type: GraphQLString },
     },
     async resolve(parent, args) {
       const task = await Task.findByPk(args.id)
