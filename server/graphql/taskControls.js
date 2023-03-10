@@ -23,7 +23,7 @@ export const TaskType = new GraphQLObjectType({
 export const TaskQueries = {
   task: {
     type: TaskType,
-    args: { id: GraphQLID },
+    args: { id: { type: GraphQLID } },
     async resolve(parent, args) {
       const task = await Task.findByPk(args.id)
       return task
@@ -73,6 +73,17 @@ export const TaskMutations = {
       const task = await Task.findByPk(args.id)
       await task.update(args)
       await task.save()
+      return task
+    },
+  },
+  deleteTask: {
+    type: TaskType,
+    args: {
+      id: { type: GraphQLID },
+    },
+    async resolve(parent, args) {
+      const task = await Task.findByPk(args.id)
+      await task.destroy()
       return task
     },
   },
