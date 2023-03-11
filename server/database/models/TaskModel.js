@@ -5,8 +5,9 @@ export const Task = sequelize.define(
   "task",
   {
     title: { type: DataTypes.STRING },
+    description: { type: DataTypes.TEXT },
     status: {
-      type: DataTypes.ENUM(["uncompleted", "completed"]),
+      type: DataTypes.ENUM(["uncompleted", "in_progress", "completed"]),
       defaultValue: "uncompleted",
     },
     assigned_to: { type: DataTypes.STRING },

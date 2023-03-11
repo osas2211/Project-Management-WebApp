@@ -13,6 +13,7 @@ export const TaskType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     title: { type: GraphQLString },
+    description: { type: GraphQLString },
     status: { type: GraphQLString },
     assigned_to: { type: GraphQLString },
     assigned_by: { type: GraphQLString },
@@ -47,6 +48,7 @@ export const TaskMutations = {
     type: TaskType,
     args: {
       title: { type: GraphQLString },
+      description: { type: GraphQLString },
       status: { type: GraphQLString },
       assigned_to: { type: GraphQLString },
       assigned_by: { type: GraphQLString },
@@ -69,6 +71,7 @@ export const TaskMutations = {
     args: {
       id: { type: GraphQLID },
       title: { type: GraphQLString },
+      description: { type: GraphQLString },
       status: { type: GraphQLString },
       tag: { type: GraphQLString },
       assigned_to: { type: GraphQLString },
