@@ -15,7 +15,7 @@ const User = sequelize.define(
     lastName: { type: DataTypes.STRING, allowNull: false },
     profile_url: { type: DataTypes.STRING, defaultValue: "" },
     email: { type: DataTypes.STRING, allowNull: false, unique: true },
-    userName: {type: DataTypes.STRING, allowNull: false, unique: true},
+    userName: { type: DataTypes.STRING, allowNull: false, unique: true },
     phone: { type: DataTypes.STRING },
     sex: { type: DataTypes.STRING },
     about: { type: DataTypes.STRING },
@@ -26,6 +26,9 @@ const User = sequelize.define(
 )
 
 Project.belongsToMany(User, { through: "UserProjects" })
-User.belongsToMany(Project, { through: "UserProjects" })
+User.belongsToMany(Project, {
+  through: "UserProjects",
+  foreignKey: "collaborators",
+})
 
 export default User
