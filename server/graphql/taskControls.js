@@ -3,6 +3,7 @@ import {
   GraphQLString,
   GraphQLID,
   GraphQLList,
+  GraphQLNonNull,
 } from "graphql"
 import { Task } from "../database/models/TaskModel.js"
 import Project from "../database/models/projectModel.js"
@@ -15,9 +16,10 @@ export const TaskType = new GraphQLObjectType({
     title: { type: GraphQLString },
     description: { type: GraphQLString },
     status: { type: GraphQLString },
-    assigned_to: { type: GraphQLString },
+    assigned_to: { type: new GraphQLList(GraphQLString) },
     assigned_by: { type: GraphQLString },
-    tag: { type: GraphQLString },
+    tags: { type: new GraphQLList(GraphQLString) },
+    for_team: { type: GraphQLString },
     due_date: { type: GraphQLString },
   }),
 })
@@ -47,12 +49,12 @@ export const TaskMutations = {
   createTask: {
     type: TaskType,
     args: {
-      title: { type: GraphQLString },
+      title: { type: new GraphQLNonNull(GraphQLString) },
       description: { type: GraphQLString },
       status: { type: GraphQLString },
-      assigned_to: { type: GraphQLString },
+      assigned_to: { type: new GraphQLList(GraphQLString) },
       assigned_by: { type: GraphQLString },
-      tag: { type: GraphQLString },
+      tags: { type: new GraphQLList(GraphQLString) },
       due_date: { type: GraphQLString },
       project_id: { type: GraphQLString },
     },
@@ -73,8 +75,8 @@ export const TaskMutations = {
       title: { type: GraphQLString },
       description: { type: GraphQLString },
       status: { type: GraphQLString },
-      tag: { type: GraphQLString },
-      assigned_to: { type: GraphQLString },
+      tags: { type: new GraphQLList(GraphQLString) },
+      assigned_to: { type: new GraphQLList(GraphQLString) },
     },
     async resolve(parent, args) {
       const task = await Task.findByPk(args.id)

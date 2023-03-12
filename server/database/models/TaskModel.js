@@ -10,9 +10,10 @@ export const Task = sequelize.define(
       type: DataTypes.ENUM(["uncompleted", "in_progress", "completed"]),
       defaultValue: "uncompleted",
     },
-    assigned_to: { type: DataTypes.STRING },
+    assigned_to: { type: DataTypes.ARRAY(DataTypes.STRING) },
     assigned_by: { type: DataTypes.STRING },
-    tag: { type: DataTypes.STRING },
+    tags: { type: DataTypes.ARRAY(DataTypes.STRING) },
+    for_team: { type: DataTypes.STRING, defaultValue: "no_team" },
     due_date: { type: DataTypes.DATE },
   },
   { tableName: "TasksTable" }

@@ -26,9 +26,6 @@ const User = sequelize.define(
 )
 
 Project.belongsToMany(User, { through: "UserProjects" })
-User.belongsToMany(Project, {
-  through: "UserProjects",
-  foreignKey: "collaborators",
-})
+User.belongsToMany(Project, { through: "UserProjects" })
 
 export default User
