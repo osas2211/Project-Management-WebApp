@@ -7,8 +7,9 @@ import { Task } from "./TaskModel.js"
 export const Team = sequelize.define(
   "Team",
   {
-    name: { type: DataTypes.STRING },
+    name: { type: DataTypes.STRING, allowNull: false },
     agenda: { type: DataTypes.TEXT },
+    team_lead: { type: DataTypes.STRING, allowNull: false },
   },
   { tableName: "TeamsTable" }
 )
