@@ -8,7 +8,8 @@ import User from "../database/models/userModel.js"
 import dotenv from "dotenv"
 import Project from "../database/models/projectModel.js"
 import { ProjectType } from "./projectControls.js"
-import { where } from "sequelize"
+
+import { NotFoundError } from "./errors.js"
 
 dotenv.config()
 
@@ -37,11 +38,22 @@ export const userQueries = {
     type: UserType,
     args: { userName: { type: GraphQLString } },
     async resolve(parent, args) {
-      const user = await User.findOne({
-        where: { userName: args.userName },
-        include: Project,
-      })
-      return user
+      try {
+        const user = await User.findOne({
+          where: { userName: args.userName },
+          include: Project,
+        })
+        if (user === null) {
+          throw new NotFoundError(
+            `User '${args.userName}' not found`,
+            "userName",
+            "USER_NOT_FOUND"
+          )
+        }
+        return user
+      } catch (error) {
+        throw new NotFoundError(error.message, "userName", "INTERNAL_ERROR")
+      }
     },
   },
   users: {
