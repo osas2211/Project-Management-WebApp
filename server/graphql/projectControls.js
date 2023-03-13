@@ -171,9 +171,22 @@ export const ProjectMutations = {
     type: ProjectType,
     args: { id: { type: GraphQLString } },
     async resolve(parent, args) {
-      const project = await Project.findByPk(args.id)
-      await project.destroy()
-      return project
+      try {
+        const project = await Project.findByPk(args.id)
+        if (project === null) {
+          return new NotFoundError(
+            `Project with id: "${args.id}" not found`,
+            "id",
+            "PROJECT_NOT_FOUND"
+          )
+        }
+        await project.destroy()
+        return project
+      } catch (error) {
+        throw new InternalServerError(
+          error.errors !== undefined ? error.errors[0].message : error.message
+        )
+      }
     },
   },
 }
