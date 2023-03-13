@@ -30,7 +30,7 @@ export class InternalServerError extends GraphQLError {
   }
 }
 
-export class BadUserInput extends GraphQLError {
+export class BadUserInputError extends GraphQLError {
   constructor(message, field) {
     super(message)
     this.extensions = {

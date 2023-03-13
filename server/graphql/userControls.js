@@ -10,7 +10,11 @@ import dotenv from "dotenv"
 import Project from "../database/models/projectModel.js"
 import { ProjectType } from "./projectControls.js"
 
-import { BadUserInput, InternalServerError, NotFoundError } from "./errors.js"
+import {
+  BadUserInputError,
+  InternalServerError,
+  NotFoundError,
+} from "./errors.js"
 
 dotenv.config()
 
@@ -41,7 +45,7 @@ export const userQueries = {
     async resolve(parent, args) {
       try {
         if (args.userName == "") {
-          return new BadUserInput("User Name is required", "userName")
+          return new BadUserInputError("User Name is required", "userName")
         }
         const user = await User.findOne({
           where: { userName: args.userName },
@@ -85,13 +89,13 @@ export const userMutations = {
     async resolve(parent, args) {
       try {
         if (args.userName == "") {
-          return new BadUserInput("User Name is required", "userName")
+          return new BadUserInputError("User Name is required", "userName")
         }
         if (args.email == "") {
-          return new BadUserInput("Email Address is required", "email")
+          return new BadUserInputError("Email Address is required", "email")
         }
         if (args.firstName == "") {
-          return new BadUserInput("First Name is required", "firstName")
+          return new BadUserInputError("First Name is required", "firstName")
         }
         const user = await User.create(args)
         return user
@@ -128,7 +132,7 @@ export const userMutations = {
           )
         }
         if (args.firstName == "") {
-          return new BadUserInput("First Name is required", "firstName")
+          return new BadUserInputError("First Name is required", "firstName")
         }
         const updateUser = await user.update(args)
         await user.save()

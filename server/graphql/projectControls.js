@@ -3,6 +3,7 @@ import {
   GraphQLID,
   GraphQLObjectType,
   GraphQLList,
+  GraphQLNonNull,
 } from "graphql"
 import dotenv from "dotenv"
 import Project from "../database/models/projectModel.js"
@@ -12,7 +13,11 @@ import { TaskType } from "./taskControls.js"
 import { TeamType } from "./teamControls.js"
 import { Task } from "../database/models/TaskModel.js"
 import { Team } from "../database/models/teamModel.js"
-import { InternalServerError, NotFoundError } from "./errors.js"
+import {
+  BadUserInputError,
+  InternalServerError,
+  NotFoundError,
+} from "./errors.js"
 
 dotenv.config()
 
@@ -78,8 +83,8 @@ export const ProjectMutations = {
   createProject: {
     type: ProjectType,
     args: {
-      userName: { type: GraphQLString },
-      title: { type: GraphQLString },
+      userName: { type: new GraphQLNonNull(GraphQLString) },
+      title: { type: new GraphQLNonNull(GraphQLString) },
       description: { type: GraphQLString },
       category: { type: GraphQLString },
       tech_stack: { type: new GraphQLList(GraphQLString) },
@@ -88,14 +93,33 @@ export const ProjectMutations = {
       end_date: { type: GraphQLString },
     },
     async resolve(parent, args) {
-      const user = await User.findOne({ where: { userName: args.userName } })
-      const data = args
-      const project = await Project.create({
-        ...data,
-        project_manager: user.userName,
-      })
-      await project.addUser(user.id)
-      return project
+      try {
+        if (args.userName == "") {
+          return new BadUserInputError("User Name is required", "userName")
+        }
+        if (args.title == "") {
+          return new BadUserInputError("Title field can't be empty", "title")
+        }
+        const user = await User.findOne({ where: { userName: args.userName } })
+        if (user === null) {
+          return new NotFoundError(
+            `User with userName: "${args.userName}" not found`,
+            "userName",
+            "USER_NOT_FOUND"
+          )
+        }
+        const data = args
+        const project = await Project.create({
+          ...data,
+          project_manager: user.userName,
+        })
+        await project.addUser(user.id)
+        return project
+      } catch (error) {
+        throw new InternalServerError(
+          error.errors !== undefined ? error.errors[0].message : error.message
+        )
+      }
     },
   },
   addCollaborator: {
