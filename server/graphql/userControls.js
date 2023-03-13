@@ -112,15 +112,32 @@ export const userMutations = {
       DOB: { type: GraphQLString },
       job_title: { type: GraphQLString },
       phone: { type: GraphQLString },
+      sex: { type: GraphQLString },
       userName: { type: GraphQLString },
     },
     async resolve(parent, args) {
-      const userName = args.userName
-      delete args.userName
-      const user = await User.findOne({ where: { userName } })
-      const updateUser = await user.update(args)
-      await user.save()
-      return updateUser
+      try {
+        const userName = args.userName
+        delete args.userName
+        const user = await User.findOne({ where: { userName } })
+        if (user === null) {
+          return new NotFoundError(
+            `User '${args.userName}' not found`,
+            "userName",
+            "USER_NOT_FOUND"
+          )
+        }
+        if (args.firstName == "") {
+          return new BadUserInput("First Name is required", "firstName")
+        }
+        const updateUser = await user.update(args)
+        await user.save()
+        return updateUser
+      } catch (error) {
+        throw new InternalServerError(
+          error.errors !== undefined ? error.errors[0].message : error.message
+        )
+      }
     },
   },
   deleteUser: {
@@ -129,11 +146,24 @@ export const userMutations = {
       userName: { type: GraphQLString },
     },
     async resolve(parent, args) {
-      const user = await User.findOne({
-        where: { userName: args.userName },
-      })
-      await user.destroy()
-      return user
+      try {
+        const user = await User.findOne({
+          where: { userName: args.userName },
+        })
+        if (user === null) {
+          return new NotFoundError(
+            `User '${args.userName}' not found`,
+            "userName",
+            "USER_NOT_FOUND"
+          )
+        }
+        await user.destroy()
+        return user
+      } catch (error) {
+        throw new InternalServerError(
+          error.errors !== undefined ? error.errors[0].message : error.message
+        )
+      }
     },
   },
 }
