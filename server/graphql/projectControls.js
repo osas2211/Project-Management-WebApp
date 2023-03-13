@@ -125,17 +125,46 @@ export const ProjectMutations = {
   addCollaborator: {
     type: ProjectType,
     args: {
-      userName: { type: GraphQLString },
-      id: { type: GraphQLString },
+      userName: { type: new GraphQLNonNull(GraphQLString) },
+      id: { type: new GraphQLNonNull(GraphQLString) },
     },
     async resolve(parent, args) {
-      const project = await Project.findByPk(args.id)
-      const user = await User.findOne({
-        where: { userName: args.userName },
-        include: User,
-      })
-      await project.addUser(user.id)
-      return project
+      try {
+        if (args.userName == "") {
+          return new BadUserInputError("User Name is required", "userName")
+        }
+        if (args.id == "") {
+          return new BadUserInputError("Project ID is required", "id")
+        }
+
+        const project = await Project.findByPk(args.id)
+        if (project === null) {
+          return new NotFoundError(
+            `Project with id: "${args.id}" not found`,
+            "id",
+            "PROJECT_NOT_FOUND"
+          )
+        }
+
+        const user = await User.findOne({
+          where: { userName: args.userName },
+          include: User,
+        })
+        if (user === null) {
+          return new NotFoundError(
+            `User '${args.userName}' not found`,
+            "userName",
+            "USER_NOT_FOUND"
+          )
+        }
+
+        await project.addUser(user.id)
+        return project
+      } catch (error) {
+        throw new InternalServerError(
+          error.errors !== undefined ? error.errors[0].message : error.message
+        )
+      }
     },
   },
   deleteProject: {
