@@ -9,7 +9,7 @@ import dotenv from "dotenv"
 import Project from "../database/models/projectModel.js"
 import { ProjectType } from "./projectControls.js"
 
-import { NotFoundError } from "./errors.js"
+import { InternalServerError, NotFoundError } from "./errors.js"
 
 dotenv.config()
 
@@ -44,7 +44,7 @@ export const userQueries = {
           include: Project,
         })
         if (user === null) {
-          throw new NotFoundError(
+          return new NotFoundError(
             `User '${args.userName}' not found`,
             "userName",
             "USER_NOT_FOUND"
@@ -52,7 +52,7 @@ export const userQueries = {
         }
         return user
       } catch (error) {
-        throw new NotFoundError(error.message, "userName", "INTERNAL_ERROR")
+        throw new InternalServerError(error.message)
       }
     },
   },

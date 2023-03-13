@@ -10,3 +10,12 @@ export class NotFoundError extends GraphQLError {
     }
   }
 }
+
+export class InternalServerError extends GraphQLError {
+  constructor(message) {
+    super(message)
+    this.extensions = {
+      statusCode: 500,
+    }
+  }
+}
