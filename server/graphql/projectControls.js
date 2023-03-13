@@ -122,6 +122,7 @@ export const ProjectMutations = {
       }
     },
   },
+
   addCollaborator: {
     type: ProjectType,
     args: {
@@ -167,6 +168,42 @@ export const ProjectMutations = {
       }
     },
   },
+
+  updateProject: {
+    type: ProjectType,
+    args: {
+      id: { type: new GraphQLNonNull(GraphQLID) },
+      title: { type: GraphQLString },
+      description: { type: GraphQLString },
+      category: { type: GraphQLString },
+      tech_stack: { type: new GraphQLList(GraphQLString) },
+      files_link: { type: new GraphQLList(GraphQLString) },
+      end_date: { type: GraphQLString },
+    },
+    async resolve(parent, args) {
+      try {
+        const project = await Project.findByPk(args.id)
+        if (project === null) {
+          return new NotFoundError(
+            `Project with id: '${args.id}' not found`,
+            "id",
+            "PROJECT_NOT_FOUND"
+          )
+        }
+        if (args.title == "") {
+          return new BadUserInputError("Project Title is required", "title")
+        }
+        const updatedProject = await project.update(args)
+        await updatedProject.save()
+        return updatedProject
+      } catch (error) {
+        throw new InternalServerError(
+          error.errors !== undefined ? error.errors[0].message : error.message
+        )
+      }
+    },
+  },
+
   deleteProject: {
     type: ProjectType,
     args: { id: { type: GraphQLString } },
