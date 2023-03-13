@@ -3,6 +3,7 @@ import {
   GraphQLID,
   GraphQLObjectType,
   GraphQLList,
+  GraphQLNonNull,
 } from "graphql"
 import User from "../database/models/userModel.js"
 import dotenv from "dotenv"
@@ -59,7 +60,11 @@ export const userQueries = {
   users: {
     type: new GraphQLList(UserType),
     async resolve(parents, args) {
-      return await User.findAll({ include: Project })
+      try {
+        return await User.findAll({ include: Project })
+      } catch (error) {
+        throw new InternalServerError(error.message)
+      }
     },
   },
 }
@@ -68,15 +73,19 @@ export const userMutations = {
   addUser: {
     type: UserType,
     args: {
-      firstName: { type: GraphQLString },
-      lastName: { type: GraphQLString },
-      email: { type: GraphQLString },
-      userName: { type: GraphQLString },
+      firstName: { type: new GraphQLNonNull(GraphQLString) },
+      lastName: { type: new GraphQLNonNull(GraphQLString) },
+      email: { type: new GraphQLNonNull(GraphQLString) },
+      userName: { type: new GraphQLNonNull(GraphQLString) },
       sex: { type: GraphQLString },
     },
     async resolve(parent, args) {
-      const user = await User.create(args)
-      return user
+      try {
+        const user = await User.create(args)
+        return user
+      } catch (error) {
+        throw new InternalServerError(error.message)
+      }
     },
   },
   updateProfile: {

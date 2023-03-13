@@ -16,6 +16,18 @@ export class InternalServerError extends GraphQLError {
     super(message)
     this.extensions = {
       statusCode: 500,
+      code: "INTERNAL_SERVER_ERROR",
+    }
+  }
+}
+
+export class BadUserInput extends GraphQLError {
+  constructor(message, field) {
+    super(message)
+    this.extensions = {
+      statusCode: 422,
+      field,
+      code: "BAD_USER_INPUT",
     }
   }
 }
