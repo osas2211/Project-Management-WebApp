@@ -12,6 +12,7 @@ import { TaskType } from "./taskControls.js"
 import { TeamType } from "./teamControls.js"
 import { Task } from "../database/models/TaskModel.js"
 import { Team } from "../database/models/teamModel.js"
+import { InternalServerError, NotFoundError } from "./errors.js"
 
 dotenv.config()
 
@@ -43,17 +44,32 @@ export const ProjectQueries = {
     type: ProjectType,
     args: { id: { type: GraphQLString } },
     async resolve(parent, args) {
-      const project = await Project.findByPk(args.id, {
-        include: [User, Task, Team],
-      })
-      return project
+      try {
+        const project = await Project.findByPk(args.id, {
+          include: [User, Task, Team],
+        })
+        if (project === null) {
+          return new NotFoundError(
+            `Project with id: "${args.id}" not found`,
+            "id",
+            "PROJECT_NOT_FOUND"
+          )
+        }
+        return project
+      } catch (error) {
+        throw new InternalServerError(error.message)
+      }
     },
   },
   projects: {
     type: new GraphQLList(ProjectType),
     async resolve(parent, args) {
-      const projects = await Project.findAll({ include: [User, Task, Team] })
-      return projects
+      try {
+        const projects = await Project.findAll({ include: [User, Task, Team] })
+        return projects
+      } catch (error) {
+        throw new InternalServerError(error.message)
+      }
     },
   },
 }
